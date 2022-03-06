@@ -15,11 +15,8 @@ namespace iSerial
 
     public partial class iSerial : Form
     {
-
         Random rdm = new Random(); /* 乱数 */
 
-        Series seriesLine = new Series();
-        Series seriesLine2 = new Series();
         private int index = 0;
         private int yIndex = 0;
 
@@ -46,32 +43,8 @@ namespace iSerial
             chart1.ChartAreas.Clear();
             chart1.Titles.Clear();
 
-            //seriesLine.ChartType = SeriesChartType.Line;
-            //seriesLine.LegendText = "Legend:Line";
-
-            //seriesLine2.ChartType = SeriesChartType.Line;
-            //seriesLine2.LegendText = "Legend:Line2";
-            //seriesLine.BorderWidth = 2;
-            //seriesLine.MarkerStyle = MarkerStyle.Circle;
-            //seriesLine.MarkerSize = 12;
-
-            //for (int i = 0; i < 10; i++)
-            //{
-                //seriesLine2.Points.Add(new DataPoint(i, rdm.Next(0, 210)));
-            //}
-
-            //ChartArea area1 = new ChartArea("area1");
-            //ChartArea area2 = new ChartArea("area2");
-
-            //seriesLine2.ChartArea = "area2";
-
-            //chart1.ChartAreas.Add(area1);
-            //chart1.ChartAreas.Add(area2);
-            //chart1.Series.Add(seriesLine);
-            //chart1.Series.Add(seriesLine2);
+            
         }
-
-
 
         private void ScanCOMPorts()
         {
@@ -179,10 +152,6 @@ namespace iSerial
                 }else if (chartOptimized) {
                     UpdateCharts2(splitedData);
                 }
-                //if (splitedText[0] != "") UpdateCharts(index, Convert.ToDouble(splitedText[0]));
-                //if (splitedData[1] != "") UpdateCharts(index, Convert.ToDouble(splitedData[1]));
-                //if (splitedText[2] != "") UpdateCharts(index, Convert.ToDouble(splitedText[2]));
-
             }
             catch
             {
@@ -205,6 +174,7 @@ namespace iSerial
             }
         }
 
+        /* TODO: 消す */
         delegate void UpdateChartsCallback(double x, double y);
         private void UpdateCharts(double x, double y)
         {
@@ -212,7 +182,6 @@ namespace iSerial
                 UpdateChartsCallback d = new UpdateChartsCallback(UpdateCharts);
                 BeginInvoke(d, new object[] { x, y });
             }else{
-                seriesLine.Points.Add(new DataPoint(x, y));
                 chart1.ChartAreas["area1"].AxisX.Minimum = x - 100;
             }
         }
@@ -229,6 +198,7 @@ namespace iSerial
             {
                 int currentChartArea = -1;
                 int currentSeries = -1;
+                bool yIndexUpdated = false;
                 foreach(var val in splitedData)
                 {
                     if (val.Equals("<"))
@@ -237,13 +207,22 @@ namespace iSerial
                     }
                     else if (val.Equals(">"))
                     {
-                        chart1.ChartAreas["cArea" + currentChartArea.ToString()].AxisX.Minimum = yIndex - 100;
+                        /* 位置指定 */
+                        chart1.ChartAreas["cArea" + currentChartArea.ToString()].AxisX.Minimum = yIndex - 300;
+                        chart1.ChartAreas["cArea" + currentChartArea.ToString()].AxisX.Maximum = yIndex;
+                        /* TODO: Y軸の制限も入れたほうがいいかも */
                     }
                     else if (currentChartArea != -1) /* -1だとareaがないのでスルー */
                     {
                         currentSeries++;
                         chartSeries[currentSeries].Points.Add(new DataPoint(yIndex, Convert.ToDouble(val)));
-                        yIndex++;
+                        if(!yIndexUpdated){
+                            yIndex++; /* チャートの分だけ++されるので最初の1回だけ */
+                            yIndexUpdated = true;
+                        }
+                        /* chartSeriesの数が十万とかになると重いので1000以上になったら最初のデータを消していく */
+                        /* このため、chartSeries[currentSeries]は1000このデータ配列（[0]が最古、[999]が最新） */
+                        if (yIndex >= 1000) chartSeries[currentSeries].Points.RemoveAt(0);
                     }
                     else
                     {
@@ -280,11 +259,36 @@ namespace iSerial
                 /* <>の数に併せてchartを作成 */
 
                 foreach (var val in splitedData) {
-                    System.Diagnostics.Debug.WriteLine("|");
                     System.Diagnostics.Debug.WriteLine(val);
                     if (val.Equals("<")) {
                         currentChartArea++;
                         ChartArea cA = new ChartArea("cArea" + currentChartArea.ToString());
+
+                        /* グラフ周りの余白設定 */
+                        cA.InnerPlotPosition.Auto = true;
+                        cA.InnerPlotPosition.Width = 100; // 100%
+                        cA.InnerPlotPosition.Height = 90;  // 90%(横軸のメモリラベル印字分の余裕を設ける)
+                        cA.InnerPlotPosition.X = 8;
+                        cA.InnerPlotPosition.Y = 0;
+                        /* 軸の表記設定 */
+                        Action<Axis> setAxis = (axisInfo) => {
+                            /* 軸メモリのフォントサイズ */
+                            axisInfo.LabelAutoFitMaxFontSize = 8;
+                            /* 軸メモリの文字色 */
+                            axisInfo.LabelStyle.ForeColor = Color.Black;
+                            /* 軸タイトルの文字色 */
+                            axisInfo.TitleForeColor = Color.Black;
+                            /* 網掛けの色 */
+                            axisInfo.MajorGrid.Enabled = true;
+                            //axisInfo.MajorGrid.LineColor = ColorTranslator.FromHtml("#008242");
+                            axisInfo.MinorGrid.Enabled = false;
+                            //axisInfo.MinorGrid.LineColor = ColorTranslator.FromHtml("#008242");
+                        };
+
+                        // X,Y軸の表示方法を定義
+                        setAxis(cA.AxisY);
+                        setAxis(cA.AxisX);
+
                         chart1.ChartAreas.Add(cA);
                     }
                     else if (val.Equals(">"))
@@ -297,6 +301,7 @@ namespace iSerial
                         s.ChartType = SeriesChartType.Line;
                         s.LegendText = "Legend:Line";
                         s.ChartArea = "cArea" + currentChartArea.ToString();
+                        s.BorderWidth = 2;
                         chartSeries.Add(s);
                         chart1.Series.Add(s);
                         System.Diagnostics.Debug.WriteLine(chartSeries.Count);
@@ -305,12 +310,6 @@ namespace iSerial
                     {
                     }
                 }
-                System.Diagnostics.Debug.WriteLine("checking");
-                System.Diagnostics.Debug.WriteLine((currentChartArea + 1) * 2 + chartSeries.Count);
-                System.Diagnostics.Debug.WriteLine(chartSeries.Count);
-                System.Diagnostics.Debug.WriteLine("/");
-                System.Diagnostics.Debug.WriteLine(splitedData.Length);
-
                 if ((currentChartArea+1)*2 + chartSeries.Count == splitedData.Length) {
                     chartOptimized = true;
                 }

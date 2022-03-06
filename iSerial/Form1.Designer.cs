@@ -78,7 +78,8 @@
             // 
             // btnClear
             // 
-            this.btnClear.Location = new System.Drawing.Point(713, 11);
+            this.btnClear.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnClear.Location = new System.Drawing.Point(1177, 11);
             this.btnClear.Name = "btnClear";
             this.btnClear.Size = new System.Drawing.Size(75, 23);
             this.btnClear.TabIndex = 3;
@@ -88,7 +89,8 @@
             // 
             // btnSend
             // 
-            this.btnSend.Location = new System.Drawing.Point(713, 417);
+            this.btnSend.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnSend.Location = new System.Drawing.Point(1177, 648);
             this.btnSend.Name = "btnSend";
             this.btnSend.Size = new System.Drawing.Size(75, 23);
             this.btnSend.TabIndex = 4;
@@ -98,11 +100,13 @@
             // 
             // tbxRxData
             // 
+            this.tbxRxData.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.tbxRxData.Location = new System.Drawing.Point(12, 41);
             this.tbxRxData.Multiline = true;
             this.tbxRxData.Name = "tbxRxData";
             this.tbxRxData.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.tbxRxData.Size = new System.Drawing.Size(776, 190);
+            this.tbxRxData.Size = new System.Drawing.Size(1240, 190);
             this.tbxRxData.TabIndex = 5;
             // 
             // cmbCOMPort
@@ -116,9 +120,11 @@
             // 
             // tbxTxData
             // 
-            this.tbxTxData.Location = new System.Drawing.Point(12, 419);
+            this.tbxTxData.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tbxTxData.Location = new System.Drawing.Point(12, 650);
             this.tbxTxData.Name = "tbxTxData";
-            this.tbxTxData.Size = new System.Drawing.Size(695, 19);
+            this.tbxTxData.Size = new System.Drawing.Size(1159, 19);
             this.tbxTxData.TabIndex = 7;
             // 
             // serialPort1
@@ -128,6 +134,9 @@
             // 
             // chart1
             // 
+            this.chart1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             chartArea1.Name = "ChartArea1";
             this.chart1.ChartAreas.Add(chartArea1);
             legend1.Name = "Legend1";
@@ -139,7 +148,7 @@
             series1.Legend = "Legend1";
             series1.Name = "Series1";
             this.chart1.Series.Add(series1);
-            this.chart1.Size = new System.Drawing.Size(776, 176);
+            this.chart1.Size = new System.Drawing.Size(1240, 407);
             this.chart1.TabIndex = 8;
             this.chart1.Text = "chart1";
             this.chart1.Click += new System.EventHandler(this.Chart1_Click);
@@ -148,7 +157,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.ClientSize = new System.Drawing.Size(1264, 681);
             this.Controls.Add(this.chart1);
             this.Controls.Add(this.tbxTxData);
             this.Controls.Add(this.cmbCOMPort);
